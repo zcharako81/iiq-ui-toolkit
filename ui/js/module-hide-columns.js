@@ -75,6 +75,6 @@
     onMutation: function() {
       processAll();
     }
-  }, '.*\\/workitem\\/commonWorkItem\\.jsf');
+  }, '.*(\\/(workitem\\/commonWorkItem|approval\\/approvals)\\.jsf)');
 
 })();

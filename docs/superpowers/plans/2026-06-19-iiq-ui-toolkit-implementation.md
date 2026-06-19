@@ -211,8 +211,22 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
       <entry key="snippets">
         <value>
           <List>
-            <Snippet name="uiToolkitApproval"
-                     regexPattern=".*/identityiq/.*[Ww]ork[Ii]tem.*"
+            <Snippet name="uiToolkitWorkItem"
+                     regexPattern=".*\/workitem\/commonWorkItem\.jsf.*"
+                     rightRequired="">
+              <scripts>
+                <List>
+                  <String>js/ui-toolkit-core.js</String>
+                </List>
+              </scripts>
+              <styleSheets>
+                <List>
+                  <String>css/ui-toolkit-core.css</String>
+                </List>
+              </styleSheets>
+            </Snippet>
+            <Snippet name="uiToolkitApprovals"
+                     regexPattern=".*\/approval\/approvals\.jsf#\/approvals.*"
                      rightRequired="">
               <scripts>
                 <List>

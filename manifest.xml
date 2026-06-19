@@ -77,7 +77,16 @@
       <entry key="snippets">
         <value>
           <List>
-            <Snippet regexPattern=".*/workitem/commonWorkItem\.jsf.*"
+            <Snippet regexPattern=".*\/workitem\/commonWorkItem\.jsf.*"
+                     rightRequired="">
+              <Scripts>
+                <String>ui/js/ui-toolkit-core.js</String>
+              </Scripts>
+              <StyleSheets>
+                <String>ui/css/ui-toolkit-core.css</String>
+              </StyleSheets>
+            </Snippet>
+            <Snippet regexPattern=".*\/approval\/approvals\.jsf.*"
                      rightRequired="">
               <Scripts>
                 <String>ui/js/ui-toolkit-core.js</String>

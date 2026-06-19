@@ -1,12 +1,27 @@
 /**
  * Module: Approval Line Breaks
  * 
- * Each attribute value item displays on its own line.
+ * Each attribute value item displays on its own line with a white
+ * full-width background, visually separated from the panel heading
+ * (badge + action buttons).
  */
+
+/* Override IIQ's display:inline-block on .more-less-toggle so the
+   attr-line children can expand to the full description width. */
+.more-less-toggle {
+  display: block !important;
+  width: 100%;
+}
+
 .iuitk-attr-line {
   display: block;
-  padding: 1px 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 6px 10px;
+  margin-bottom: 2px;
   line-height: 1.5;
+  border-radius: 3px;
+  box-sizing: border-box;
 }
 
 .iuitk-attr-line:not(:last-child) {

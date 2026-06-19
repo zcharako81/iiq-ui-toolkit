@@ -36,7 +36,7 @@
     for (var op in OPERATION_CLASSES) {
       if (OPERATION_CLASSES.hasOwnProperty(op) &&
           trimmed.indexOf(op) !== -1) {
-        return OPERATION_CLASSES[op];
+        return { opClass: OPERATION_CLASSES[op], opName: op };
       }
     }
     return null;
@@ -59,13 +59,64 @@
     var strongs = document.querySelectorAll('span.description > strong.ng-binding');
     for (var i = 0; i < strongs.length; i++) {
       var strong = strongs[i];
-      var text = (strong.textContent || strong.innerText || '').trim();
-      var opClass = getOperationClass(text);
+      var desc = strong.parentNode;
 
-      if (opClass) {
+      // If we already wrapped this description's badge into a header
+      // row, just remove the redundant strong (Angular recreated it).
+      if (desc.getAttribute('data-iuitk-op') === 'true') {
+        strong.parentNode.removeChild(strong);
+        continue;
+      }
+
+      var text = (strong.textContent || strong.innerText || '').trim();
+      var result = getOperationClass(text);
+
+      if (result) {
         var panel = findAncestorPanel(strong);
-        if (panel && !panel.classList.contains(opClass)) {
-          panel.classList.add(opClass);
+        if (panel && !panel.classList.contains(result.opClass)) {
+          panel.classList.add(result.opClass);
+        }
+
+        // Remove the original <strong> from the DOM
+        strong.parentNode.removeChild(strong);
+
+        // Mark the description so the CSS can style it as a full-width
+        // container for the attribute values (no badge/toggle split).
+        desc.setAttribute('data-iuitk-op', 'true');
+
+        // Create the operation badge
+        var badge = document.createElement('div');
+        badge.className = 'iuitk-op-badge ' + result.opClass;
+        badge.textContent = result.opName;
+
+        // Find the sibling .pull-right (action buttons) and wrap it
+        // together with the badge in a single header row element.
+        // The col-xs-12 is the parent of both desc and pull-right.
+        var col = desc.parentNode;
+        var pullRight = col ? col.querySelector(':scope > .pull-right') : null;
+
+        if (pullRight) {
+          // Insert the badge just before the pull-right inside col
+          col.insertBefore(badge, pullRight);
+
+          // Wrap the badge + pull-right in a single container
+          var headerRow = document.createElement('div');
+          headerRow.className = 'iuitk-op-header-row';
+          col.insertBefore(headerRow, badge);
+          headerRow.appendChild(badge);
+          headerRow.appendChild(pullRight);
+
+          // Move the header row to the TOP of the col, so it appears
+          // above the description (badge + buttons on top, attribute
+          // values below).
+          col.insertBefore(headerRow, col.firstChild);
+        } else {
+          // No pull-right found — fall back to inserting the badge
+          // in the description, before the more-less-toggle.
+          var toggle = desc.querySelector('.more-less-toggle');
+          if (toggle) {
+            desc.insertBefore(badge, toggle);
+          }
         }
       }
     }

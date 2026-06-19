@@ -1,9 +1,12 @@
 /**
  * Module: Change Highlighting
  * 
- * Color-codes approval item panels by operation type using
- * a colored left border only (no background tinting).
+ * Color-codes approval item panels by operation type with:
+ *   - Colored left border on the panel
+ *   - Pill badge on the operation label with matching color
  */
+
+/* ========== Panel left border ========== */
 
 /* Create / Add — green border */
 .iuitk-op-create {
@@ -28,4 +31,53 @@
 /* Disable / Lock — orange border */
 .iuitk-op-disable {
   border-left: 4px solid #ff9800 !important;
+}
+
+
+/* ========== Header row (badge + action buttons) ========== */
+
+/* The header row wraps the operation badge and the .pull-right
+   action buttons in a single flex container. The badge sits on the
+   left, the buttons are pushed to the right. */
+.iuitk-op-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* Override IIQ's display:inline-flex on the description span — the
+   description now contains only the more-less-toggle (attribute
+   values), which should be a full-width block below the header row. */
+span.description[data-iuitk-op] {
+  display: block;
+}
+
+/* Pill badge, sized to its content. Sits inside the header row. */
+.iuitk-op-badge {
+  display: inline-block;
+  white-space: nowrap;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-weight: 600;
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+.iuitk-op-create .iuitk-op-badge,
+.iuitk-op-enable .iuitk-op-badge {
+  background-color: #4caf50;
+}
+
+.iuitk-op-modify .iuitk-op-badge {
+  background-color: #2196f3;
+}
+
+.iuitk-op-delete .iuitk-op-badge {
+  background-color: #f44336;
+}
+
+.iuitk-op-disable .iuitk-op-badge {
+  background-color: #ff9800;
 }

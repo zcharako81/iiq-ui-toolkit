@@ -16,28 +16,22 @@
 IIQ-UI-Toolkit/
 ├── build.properties                     # Build tokens (iiq.home, version)
 ├── build.xml                            # Ant build: compile Java, create ZIP
-├── manifest.xml                         # Plugin definition, settings, snippets, resources
-├── import/
-│   └── install/
-│       └── SPRights.xml                 # IIQUIToolkitAccess SPRight
+├── manifest.xml                         # Plugin definition, settings, snippets
+├── import/                              # Install-time objects (future use)
 ├── src/
-│   └── com/str/iiq/ui/toolkit/
+│   └── com/iiq/ui/toolkit/
 │       └── UIToolkitRestResource.java   # REST endpoint serving settings as JSON
 ├── ui/
 │   ├── js/
 │   │   ├── ui-toolkit-core.js           # Core loader: fetch settings, activate modules
 │   │   ├── module-approval-linebreaks.js
 │   │   ├── module-hide-columns.js
-│   │   ├── module-display-names.js
-│   │   ├── module-change-highlight.js
-│   │   └── module-inline-form-details.js
+│   │   └── module-change-highlight.js
 │   └── css/
 │       ├── ui-toolkit-core.css
 │       ├── module-approval-linebreaks.css
 │       ├── module-hide-columns.css
-│       ├── module-display-names.css
-│       ├── module-change-highlight.css
-│       └── module-inline-form-details.css
+│       └── module-change-highlight.css
 ├── lib/                                  # Compiled JARs (output)
 ├── db/                                   # Empty (no DB needed for v1)
 └── messages/                             # Empty (i18n future)
@@ -132,7 +126,7 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
 <Plugin name="IIQ-UI-Toolkit" displayName="IIQ UI Toolkit" version="1.0.0"
         minSystemVersion="8.5" maxSystemVersion="8.5"
-        rightRequired="IIQUIToolkitAccess">
+        rightRequired="">
 
   <Attributes>
     <Map>
@@ -156,8 +150,8 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
               dataType="boolean" defaultValue="false"/>
 
             <PluginSetting name="approvalItems.hideApplication"
-              label="Hide application column"
-              helpText="Hide the application column in approval item grids"
+              label="Hide application rows for IdentityIQ"
+              helpText="Hide approval items where the application is IdentityIQ. Items for other applications are unaffected."
               dataType="boolean" defaultValue="false"/>
 
             <PluginSetting name="approvalItems.hideNativeIdentity"
@@ -175,16 +169,41 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
               helpText="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
               dataType="boolean" defaultValue="false"/>
 
-            <PluginSetting name="approvalItems.inlineFormDetails"
-              label="Display form details inline"
-              helpText="Show form details inline instead of requiring a click on the View Form button"
-              dataType="boolean" defaultValue="false"/>
 
-            <PluginSetting name="displayNames.map"
-              label="Display name mappings"
-              helpText="Comma-separated list of technicalName=displayName pairs (e.g. firstName=First Name,lastName=Last Name)"
-              dataType="string" defaultValue=""/>
           </List>
+        </value>
+      </entry>
+
+      <!-- Settings Form (groups settings into sections in the config UI) -->
+      <entry key="settingsForm">
+        <value>
+          <Form name="IIQ UI Toolkit Settings">
+            <Attributes>
+              <Map>
+                <entry key="pageTitle" value="IIQ UI Toolkit Configuration"/>
+                <entry key="title" value="IIQ UI Toolkit Configuration"/>
+              </Map>
+            </Attributes>
+            <Description>Configure approval work item UI enhancements</Description>
+            <Section name="Approval Item Settings" label="Approval Item Settings">
+              <Field name="approvalItems.lineBreak"
+                     displayName="Display approvalItem attributes with line breaks"
+                     helpKey="Split comma-separated attribute values into separate lines in approval work items"
+                     type="boolean"/>
+              <Field name="approvalItems.hideApplication"
+                     displayName="Hide application rows for IdentityIQ"
+                     helpKey="Hide approval items where the application is IdentityIQ. Items for other applications are unaffected."
+                     type="boolean"/>
+              <Field name="approvalItems.hideNativeIdentity"
+                     displayName="Hide native identity column"
+                     helpKey="Hide the native identity column in approval item grids"
+                     type="boolean"/>
+              <Field name="approvalItems.changeHighlight"
+                     displayName="Highlight changes by operation type"
+                     helpKey="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
+                     type="boolean"/>
+            </Section>
+          </Form>
         </value>
       </entry>
 
@@ -194,7 +213,7 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
           <List>
             <Snippet name="uiToolkitApproval"
                      regexPattern=".*/identityiq/.*[Ww]ork[Ii]tem.*"
-                     rightRequired="IIQUIToolkitAccess">
+                     rightRequired="">
               <scripts>
                 <List>
                   <String>js/ui-toolkit-core.js</String>
@@ -215,22 +234,7 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
 </Plugin>
 ```
 
-### Task 3: SPRight Definition
-
-**Files:**
-- Create: `import/install/SPRights.xml`
-
-- [ ] **Step 1: Create SPRights.xml**
-
-```xml
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE SPRight PUBLIC "sailpoint.dtd" "sailpoint.dtd">
-<SPRight name="IIQUIToolkitAccess" displayName="IIQ UI Toolkit Access">
-  <Description>Access to the IIQ UI Toolkit plugin features and settings API</Description>
-</SPRight>
-```
-
-### Task 4: REST Endpoint
+### Task 3: REST Endpoint
 
 **Files:**
 - Create: `src/com/str/iiq/ui/toolkit/UIToolkitRestResource.java`
@@ -241,7 +245,7 @@ mkdir -p src/com/str/iiq/ui/toolkit ui/js ui/css import/install lib db messages
 package com.iiq.ui.toolkit;
 
 import sailpoint.rest.plugin.BasePluginResource;
-import sailpoint.rest.plugin.RequiredRight;
+import sailpoint.rest.plugin.AllowAll;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -257,7 +261,7 @@ import java.util.Map;
  * can determine which modules to activate.
  */
 @Path("IIQUIToolkit")
-@RequiredRight("IIQUIToolkitAccess")
+@AllowAll
 public class UIToolkitRestResource extends BasePluginResource {
 
     @Override
@@ -275,14 +279,13 @@ public class UIToolkitRestResource extends BasePluginResource {
         settings.put("approvalItems.hideNativeIdentity", getSettingBool("approvalItems.hideNativeIdentity"));
         settings.put("approvalItems.hideOperation", getSettingBool("approvalItems.hideOperation"));
         settings.put("approvalItems.changeHighlight", getSettingBool("approvalItems.changeHighlight"));
-        settings.put("approvalItems.inlineFormDetails", getSettingBool("approvalItems.inlineFormDetails"));
-        settings.put("displayNames.map", getSettingString("displayNames.map"));
+
         return Response.ok(settings).build();
     }
 }
 ```
 
-### Task 5: Core Loader (ui-toolkit-core.js)
+### Task 4: Core Loader (ui-toolkit-core.js)
 
 **Files:**
 - Create: `ui/js/ui-toolkit-core.js`
@@ -325,11 +328,7 @@ var UIToolkit = (function() {
     var hideOp  = settings['approvalItems.hideOperation'];
     if (hideApp || hideNI || hideOp) active.push('hide-columns');
 
-    var namesMap = settings['displayNames.map'];
-    if (namesMap && namesMap.trim().length > 0) active.push('display-names');
-
     if (settings['approvalItems.changeHighlight']) active.push('change-highlight');
-    if (settings['approvalItems.inlineFormDetails']) active.push('inline-form-details');
 
     return active;
   }
@@ -469,7 +468,7 @@ if (document.readyState === 'loading') {
 }
 ```
 
-### Task 6: Module 1 — Approval Line Breaks (JS + CSS)
+### Task 5: Module 1 — Approval Line Breaks (JS + CSS)
 
 **Files:**
 - Create: `ui/js/module-approval-linebreaks.js`
@@ -496,6 +495,10 @@ if (document.readyState === 'loading') {
   /**
    * Process a single cell element: find comma-separated items and
    * wrap each in a line-break element.
+   *
+   * Important: only splits on commas when the text contains the
+   * `key='value'` quote pattern. Without quotes, commas are part of
+   * a single value (e.g. an LDAP DN like "uid=user,ou=users,dc=test").
    */
   function processCell(cell) {
     // Skip if already processed
@@ -504,11 +507,22 @@ if (document.readyState === 'loading') {
     var text = cell.textContent || cell.innerText;
     if (!text) return;
 
-    // Find comma-separated items within the cell
-    // Pattern matches: "name = 'value1,value2'" or flat "value1,value2,value3"
-    // Also handles the standard IIQ format: "attr1 = 'val1', attr2 = 'val2'"
-    var items = splitDisplayValue(text);
-    if (items.length <= 1) return;
+    // Only process if the text contains a key=value pattern
+    if (text.indexOf('=') === -1) return;
+
+    // Only split on commas when the value is quoted (key='value' or key= 'value').
+    // Without quotes, commas are part of a single value (e.g. LDAP DN).
+    var hasQuotedValue = text.indexOf("='") !== -1 || text.indexOf("= '") !== -1;
+
+    var items;
+    if (hasQuotedValue && text.indexOf(',') !== -1) {
+      // Multiple items — split by top-level commas
+      items = splitDisplayValue(text);
+      if (items.length <= 1) items = [text];
+    } else {
+      // Single value (no commas, or unquoted single value like an LDAP DN)
+      items = [text];
+    }
 
     // Replace content with individual line spans
     cell.setAttribute('data-iuitk-linebreaks', 'true');
@@ -591,12 +605,18 @@ if (document.readyState === 'loading') {
 /**
  * Module: Approval Line Breaks
  * 
- * Each attribute value item displays on its own line.
+ * Each attribute value item displays on its own line with a white
+ * full-width background, visually separated from the panel heading
+ * (badge + action buttons).
  */
 .iuitk-attr-line {
   display: block;
-  padding: 1px 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 6px 10px;
+  margin-bottom: 2px;
   line-height: 1.5;
+  border-radius: 3px;
 }
 
 .iuitk-attr-line:not(:last-child) {
@@ -611,7 +631,7 @@ if (document.readyState === 'loading') {
 }
 ```
 
-### Task 7: Module 2 — Hide Columns (JS + CSS)
+### Task 6: Module 2 — Hide Columns (JS + CSS)
 
 **Files:**
 - Create: `ui/js/module-hide-columns.js`
@@ -623,9 +643,9 @@ if (document.readyState === 'loading') {
 /**
  * Module: Hide Columns
  * 
- * Hides specified columns (application, native identity, operation)
- * from approval item grids. Works by finding column headers by text
- * content and adding display:none at the correct column index.
+ * Hides specified fields (application, native identity) from approval items.
+ * The application field is only hidden when its value is "IdentityIQ"
+ * (case-insensitive) — items for other applications remain visible.
  * 
  * Re-applies on DOM mutations for IIQ's dynamic loading.
  */
@@ -729,146 +749,7 @@ td[style*="display: none"] {
 }
 ```
 
-### Task 8: Module 3 — Display Name Mapping (JS + CSS)
-
-**Files:**
-- Create: `ui/js/module-display-names.js`
-- Create: `ui/css/module-display-names.css`
-
-- [ ] **Step 1: Create module-display-names.js**
-
-```javascript
-/**
- * Module: Display Name Mapping
- * 
- * Replaces technical attribute names with friendly display names
- * in approval item display values.
- * 
- * Config: displayNames.map is a comma-separated string of
- * technicalName=displayName pairs.
- * Example: "firstName=First Name,lastName=Last Name,department=Department"
- */
-(function() {
-
-  'use strict';
-
-  var nameMap = null;
-
-  /**
-   * Parse the displayNames.map config string into a lookup object.
-   * Format: "tech1=Display 1,tech2=Display 2"
-   */
-  function parseNameMap(configStr) {
-    var map = {};
-    if (!configStr || configStr.trim().length === 0) return map;
-
-    var pairs = configStr.split(',');
-    for (var i = 0; i < pairs.length; i++) {
-      var pair = pairs[i].trim();
-      var eqIdx = pair.indexOf('=');
-      if (eqIdx > 0) {
-        var techName = pair.substring(0, eqIdx).trim();
-        var displayName = pair.substring(eqIdx + 1).trim();
-        if (techName.length > 0 && displayName.length > 0) {
-          map[techName] = displayName;
-        }
-      }
-    }
-    return map;
-  }
-
-  /**
-   * Replace attribute names in display value text.
-   * Pattern matches: "technicalName = 'value'" → "Display Name = 'value'"
-   */
-  function replaceNames(text) {
-    if (!text || !nameMap) return text;
-
-    var result = text;
-    for (var techName in nameMap) {
-      if (nameMap.hasOwnProperty(techName)) {
-        var displayName = nameMap[techName];
-        // Match "techName = '" at the start of a line/item
-        var regex = new RegExp(
-          '(^|,\\s*|\\n\\s*)' + escapeRegex(techName) + '(\\s*=\\s*\')',
-          'gi'
-        );
-        result = result.replace(regex, '$1' + displayName + '$2');
-
-        // Also match bare "techName =" without quotes (alternative format)
-        var regex2 = new RegExp(
-          '(^|,\\s*|\\n\\s*)' + escapeRegex(techName) + '(\\s*=)',
-          'gi'
-        );
-        result = result.replace(regex2, '$1' + displayName + '$2');
-      }
-    }
-    return result;
-  }
-
-  function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  /**
-   * Process all approval item cells, replacing technical names with
-   * display names in their text content.
-   */
-  function processAll() {
-    if (!nameMap) return;
-
-    var selectors = [
-      '.approval-item-value',
-      '.work-item-value',
-      'td[class*="value"]',
-      '.sailpoint-grid-cell',
-      '[data-attribute-value]',
-      '.iuitk-attr-line'  // Also process already-line-broken cells
-    ];
-
-    for (var s = 0; s < selectors.length; s++) {
-      var cells = document.querySelectorAll(selectors[s]);
-      for (var c = 0; c < cells.length; c++) {
-        var cell = cells[c];
-        if (cell.getAttribute('data-iuitk-names') === 'true') continue;
-        cell.setAttribute('data-iuitk-names', 'true');
-        cell.textContent = replaceNames(cell.textContent);
-      }
-    }
-  }
-
-  // Register module
-  UIToolkit.registerModule('display-names', {
-    init: function(settings) {
-      var configStr = settings['displayNames.map'];
-      if (configStr && configStr.trim().length > 0) {
-        nameMap = parseNameMap(configStr);
-        processAll();
-      }
-    },
-    onMutation: function() {
-      if (nameMap) processAll();
-    }
-  });
-
-})();
-```
-
-- [ ] **Step 2: Create module-display-names.css**
-
-```css
-/**
- * Module: Display Name Mapping
- * 
- * Minimal styles — the JS handles text replacement.
- * This file ensures a consistent visual for replaced names.
- */
-[data-iuitk-names="true"] {
-  /* Visual cue that name mapping has been applied (optional) */
-}
-```
-
-### Task 9: Module 4 — Change Highlighting (JS + CSS)
+### Task 7: Module 3 — Change Highlighting (JS + CSS)
 
 **Files:**
 - Create: `ui/js/module-change-highlight.js`
@@ -1029,253 +910,49 @@ td[style*="display: none"] {
 .iuitk-op-disable td:first-child {
   border-left-color: #ff9800;
 }
-```
 
-### Task 10: Module 5 — Inline Form Details (JS + CSS)
-
-**Files:**
-- Create: `ui/js/module-inline-form-details.js`
-- Create: `ui/css/module-inline-form-details.css`
-
-- [ ] **Step 1: Create module-inline-form-details.js**
-
-```javascript
-/**
- * Module: Inline Form Details
- * 
- * Displays approval form content inline in the work item display
- * area, replacing the "View Form" button/link with expandable
- * inline content.
- * 
- * This module intercepts the View Form link, fetches its content
- * via AJAX, and renders it directly in the work item display area.
- */
-(function() {
-
-  'use strict';
-
-  /**
-   * Find "View Form" links/buttons in the approval work item page
-   * and replace them with inline expandable content.
-   */
-  function processAll() {
-    // Common patterns for "View Form" links in IIQ
-    var viewFormSelectors = [
-      'a:contains("View Form")',
-      'a:contains("view form")',
-      'a:contains("View Details")',
-      'button:contains("View Form")',
-      'a[href*="form"]',
-      'a[href*="Form"]',
-      '[class*="viewForm"]',
-      '[class*="view-form"]'
-    ];
-
-    // querySelectorAll doesn't support :contains, so we do it manually
-    var allLinks = document.querySelectorAll('a, button, span');
-    for (var i = 0; i < allLinks.length; i++) {
-      var el = allLinks[i];
-      if (el.getAttribute('data-iuitk-form') === 'true') continue;
-
-      var text = (el.textContent || el.innerText || '').trim().toLowerCase();
-      if (text.indexOf('view form') !== -1 || text.indexOf('view details') !== -1) {
-        replaceViewForm(el);
-      } else if (text.indexOf('form') !== -1 && el.tagName === 'A' && el.href) {
-        replaceViewForm(el);
-      } else {
-        // Check for class-based indicators
-        var className = (el.className || '').toLowerCase();
-        if (className.indexOf('viewform') !== -1 || className.indexOf('formdetails') !== -1) {
-          replaceViewForm(el);
-        }
-      }
-    }
-  }
-
-  /**
-   * Replace a "View Form" element with an inline toggle.
-   * Fetches the form content from the link's href.
-   */
-  function replaceViewForm(el) {
-    el.setAttribute('data-iuitk-form', 'true');
-
-    // Get the href or the parent link's href
-    var href = el.href;
-    if (!href) {
-      var parentLink = findParentLink(el);
-      if (parentLink) href = parentLink.href;
-    }
-
-    // Hide the original element
-    el.style.display = 'none';
-
-    // Create toggle container
-    var container = document.createElement('div');
-    container.className = 'iuitk-form-inline';
-
-    // Create toggle button
-    var toggle = document.createElement('button');
-    toggle.className = 'iuitk-form-toggle';
-    toggle.textContent = 'Show Details';
-    toggle.setAttribute('type', 'button');
-    container.appendChild(toggle);
-
-    // Create content area
-    var content = document.createElement('div');
-    content.className = 'iuitk-form-content';
-    content.style.display = 'none';
-
-    // Insert the container after the original element
-    el.parentNode.insertBefore(container, el.nextSibling);
-
-    // Handle click to toggle and fetch content
-    toggle.addEventListener('click', function() {
-      if (content.style.display === 'none') {
-        // Fetch content if not already loaded
-        if (!content.getAttribute('data-loaded') && href) {
-          toggle.textContent = 'Loading...';
-          fetchFormContent(href, content, toggle);
-        } else {
-          content.style.display = 'block';
-          toggle.textContent = 'Hide Details';
-        }
-      } else {
-        content.style.display = 'none';
-        toggle.textContent = 'Show Details';
-      }
-    });
-
-    container.appendChild(content);
-  }
-
-  /**
-   * Fetch form content from a URL.
-   * Falls back to displaying the URL if the fetch fails.
-   */
-  function fetchFormContent(url, contentEl, toggleEl) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          // Extract and display the form content
-          var html = xhr.responseText;
-          contentEl.innerHTML = html;
-          // Try to extract the main form area
-          extractFormArea(contentEl);
-          contentEl.setAttribute('data-loaded', 'true');
-          contentEl.style.display = 'block';
-          toggleEl.textContent = 'Hide Details';
-        } else {
-          // Fallback: show the URL
-          contentEl.textContent = 'Form details unavailable. Please try again.';
-          contentEl.style.display = 'block';
-          toggleEl.textContent = 'Hide Details';
-        }
-      }
-    };
-    xhr.onerror = function() {
-      contentEl.textContent = 'Form details unavailable. Please try again.';
-      contentEl.style.display = 'block';
-      toggleEl.textContent = 'Hide Details';
-    };
-    xhr.send();
-  }
-
-  /**
-   * Extract the main form area from fetched HTML.
-   * This handles IIQ's form rendering where the response may contain
-   * a full page that needs to be scoped to the form content.
-   */
-  function extractFormArea(container) {
-    // Try to find a form element or content area within the fetched HTML
-    var formElements = container.querySelectorAll('form, .form-area, .form-content, [class*="form"]');
-    if (formElements.length > 0) {
-      // Replace container content with the form content
-      var formContent = formElements[0].innerHTML;
-      container.innerHTML = formContent;
-    }
-  }
-
-  function findParentLink(el) {
-    while (el && el.tagName !== 'A') {
-      el = el.parentElement;
-    }
-    return el;
-  }
-
-  // Register module
-  UIToolkit.registerModule('inline-form-details', {
-    init: function() {
-      processAll();
-    },
-    onMutation: function() {
-      processAll();
-    }
-  });
-
-})();
-```
-
-- [ ] **Step 2: Create module-inline-form-details.css**
-
-```css
-/**
- * Module: Inline Form Details
- * 
- * Styles for the inline form toggle and content area.
- */
-
-.iuitk-form-inline {
-  margin: 8px 0;
-  font-size: 0.9em;
+/* Override IIQ's display:inline-flex on the description span so the
+   badge and the more-less-toggle stack on separate lines, while still
+   flowing inline with the sibling .pull-right button bar. */
+span.description[data-iuitk-op] {
+  display: inline-block;
+  vertical-align: top;
+  max-width: calc(100% - 240px);
 }
 
-.iuitk-form-toggle {
-  background: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 4px 12px;
-  cursor: pointer;
-  font-size: 0.9em;
-  color: #333;
-}
-
-.iuitk-form-toggle:hover {
-  background: #e0e0e0;
-}
-
-.iuitk-form-content {
-  margin-top: 8px;
-  padding: 12px;
-  background: #fafafa;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  max-height: 400px;
-  overflow-y: auto;
-  line-height: 1.5;
-}
-
-/* Style form fields within the inline content */
-.iuitk-form-content table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.iuitk-form-content td,
-.iuitk-form-content th {
-  padding: 4px 8px;
-  border: 1px solid #eee;
-  text-align: left;
-}
-
-.iuitk-form-content th {
-  background: #f0f0f0;
+/* Operation label pill badge — block-level, inserted before .more-less-toggle */
+.iuitk-op-badge {
+  display: block;
+  width: fit-content;
+  white-space: nowrap;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 10px;
+  margin-bottom: 4px;
   font-weight: 600;
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+.iuitk-op-create .iuitk-op-badge,
+.iuitk-op-enable .iuitk-op-badge {
+  background-color: #4caf50;
+}
+
+.iuitk-op-modify .iuitk-op-badge {
+  background-color: #2196f3;
+}
+
+.iuitk-op-delete .iuitk-op-badge {
+  background-color: #f44336;
+}
+
+.iuitk-op-disable .iuitk-op-badge {
+  background-color: #ff9800;
 }
 ```
 
-### Task 11: Core CSS (ui-toolkit-core.css)
+### Task 8: Core CSS (ui-toolkit-core.css)
 
 **Files:**
 - Create: `ui/css/ui-toolkit-core.css`
@@ -1308,7 +985,7 @@ td[style*="display: none"] {
 }
 ```
 
-### Task 12: Build and Verify
+### Task 9: Build and Verify
 
 **Files:**
 - None needed (build step)
@@ -1321,20 +998,15 @@ ls -la \
   build.properties \
   build.xml \
   manifest.xml \
-  import/install/SPRights.xml \
-  src/com/str/iiq/ui/toolkit/UIToolkitRestResource.java \
+  src/com/iiq/ui/toolkit/UIToolkitRestResource.java \
   ui/js/ui-toolkit-core.js \
   ui/js/module-approval-linebreaks.js \
   ui/js/module-hide-columns.js \
-  ui/js/module-display-names.js \
   ui/js/module-change-highlight.js \
-  ui/js/module-inline-form-details.js \
   ui/css/ui-toolkit-core.css \
   ui/css/module-approval-linebreaks.css \
   ui/css/module-hide-columns.css \
-  ui/css/module-display-names.css \
-  ui/css/module-change-highlight.css \
-  ui/css/module-inline-form-details.css
+  ui/css/module-change-highlight.css
 ```
 
 - [ ] **Step 2: Run Ant build**
@@ -1360,11 +1032,10 @@ Expected: All plugin files listed in the ZIP archive.
 Tasks must be executed in order:
 1. Task 1 (skeleton) — needed for directory structure
 2. Task 2 (manifest.xml) — defines the plugin
-3. Task 3 (SPRights.xml) — adds access right
-4. Task 4 (REST endpoint) — Java class, needs compilation
-5. Task 5 (core loader) — needs to exist before modules
-6. Tasks 6-10 (modules) — each independent, but ordered for clarity
-7. Task 11 (core CSS) — needs to exist before modules
-8. Task 12 (build + verify) — final integration check
+3. Task 3 (REST endpoint) — Java class, needs compilation
+4. Task 4 (core loader) — needs to exist before modules
+5. Tasks 5-7 (modules) — each independent, but ordered for clarity
+6. Task 8 (core CSS) — needs to exist before modules
+7. Task 9 (build + verify) — final integration check
 
-Task 4 (REST) and Tasks 5-11 (JS/CSS) are independent and could theoretically be built in parallel, but the subagent-driven approach processes them sequentially for clean review gates.
+Task 3 (REST) and Tasks 4-8 (JS/CSS) are independent and could theoretically be built in parallel, but the subagent-driven approach processes them sequentially for clean review gates.

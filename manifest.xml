@@ -23,8 +23,8 @@
               dataType="boolean" defaultValue="false"/>
 
             <Setting name="approvalItems.hideApplication"
-              label="Hide application column"
-              helpText="Hide the application column in approval item grids"
+              label="Hide application rows for IdentityIQ"
+              helpText="Hide approval items where the application is IdentityIQ. Items for other applications are unaffected."
               dataType="boolean" defaultValue="false"/>
 
             <Setting name="approvalItems.hideNativeIdentity"
@@ -37,6 +37,39 @@
               helpText="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
               dataType="boolean" defaultValue="false"/>
           </List>
+        </value>
+      </entry>
+
+      <!-- Settings Form (groups settings into sections in the config UI) -->
+      <entry key="settingsForm">
+        <value>
+          <Form name="IIQ UI Toolkit Settings">
+            <Attributes>
+              <Map>
+                <entry key="pageTitle" value="IIQ UI Toolkit Configuration"/>
+                <entry key="title" value="IIQ UI Toolkit Configuration"/>
+              </Map>
+            </Attributes>
+            <Description>Configure approval work item UI enhancements</Description>
+            <Section name="Approval Item Settings" label="Approval Item Settings">
+              <Field name="approvalItems.lineBreak"
+                     displayName="Display approvalItem attributes with line breaks"
+                     helpKey="Split comma-separated attribute values into separate lines in approval work items"
+                     type="boolean"/>
+              <Field name="approvalItems.hideApplication"
+                     displayName="Hide application rows for IdentityIQ"
+                     helpKey="Hide approval items where the application is IdentityIQ. Items for other applications are unaffected."
+                     type="boolean"/>
+              <Field name="approvalItems.hideNativeIdentity"
+                     displayName="Hide native identity column"
+                     helpKey="Hide the native identity column in approval item grids"
+                     type="boolean"/>
+              <Field name="approvalItems.changeHighlight"
+                     displayName="Highlight changes by operation type"
+                     helpKey="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
+                     type="boolean"/>
+            </Section>
+          </Form>
         </value>
       </entry>
 

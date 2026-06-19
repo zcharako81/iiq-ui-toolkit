@@ -2,8 +2,9 @@
  * Module: Approval Line Breaks
  * 
  * Splits comma-separated attribute values in approval item descriptions
- * into separate lines. Each comma-separated item gets wrapped in a
- * <span class="iuitk-attr-line"> element for CSS block display.
+ * into separate lines. Each value (including single-line items) gets
+ * wrapped in a <span class="iuitk-attr-line"> element for consistent
+ * CSS block display with white full-width background.
  * 
  * Targets the Angular card layout structure:
  *   <div class="more-less-toggle ng-isolate-scope">
@@ -17,8 +18,13 @@
   'use strict';
 
   /**
-   * Process a single text span element: find comma-separated items
-   * and wrap each in a line-break element.
+   * Process a single text span element: split comma-separated values
+   * into separate lines AND wrap single values too, so every line
+   * gets the .iuitk-attr-line styling (white full-width background).
+   *
+   * Important: only splits on commas when the text contains the
+   * `key='value'` quote pattern. Without quotes, commas are part of
+   * a single value (e.g. an LDAP DN like "uid=user,ou=users,dc=test").
    */
   function processSpan(span) {
     // Skip if already processed
@@ -27,15 +33,24 @@
     var text = span.textContent || span.innerText;
     if (!text) return;
 
-    // Only process if the text contains comma-separated pattern
-    // like: attr = 'value', nextAttr = 'value'
-    if (text.indexOf(',') === -1) return;
-    if (text.indexOf("='") === -1 && text.indexOf("= '") === -1) return;
+    // Only process if the text contains a key=value pattern
+    if (text.indexOf('=') === -1) return;
 
-    var items = splitDisplayValue(text);
-    if (items.length <= 1) return;
+    // Only split on commas when the value is quoted (key='value' or key= 'value').
+    // Without quotes, commas are part of a single value (e.g. LDAP DN).
+    var hasQuotedValue = text.indexOf("='") !== -1 || text.indexOf("= '") !== -1;
 
-    // Replace content with individual line spans
+    var items;
+    if (hasQuotedValue && text.indexOf(',') !== -1) {
+      // Multiple items — split by top-level commas
+      items = splitDisplayValue(text);
+      if (items.length <= 1) items = [text];
+    } else {
+      // Single value (no commas, or unquoted single value like an LDAP DN)
+      items = [text];
+    }
+
+    // Replace content with .iuitk-attr-line spans
     span.setAttribute('data-iuitk-linebreaks', 'true');
     span.innerHTML = '';
 

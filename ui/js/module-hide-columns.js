@@ -1,8 +1,10 @@
 /**
  * Module: Hide Columns
  * 
- * Hides specified fields (application, account, operation)
- * from approval item cards. Works with the Angular sp-card-data layout:
+ * Hides specified fields (application, account) from approval item cards.
+ * The application field is only hidden when its value is "IdentityIQ"
+ * (case-insensitive) — items for other applications remain visible.
+ * Works with the Angular sp-card-data layout:
  * 
  *   <div sp-card-data="true">
  *     <span class="col-application">

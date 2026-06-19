@@ -14,9 +14,7 @@ IIQ-UI-Toolkit is a generic, extensible SailPoint IdentityIQ plugin that manipul
 
 1. **Approval Item Line Breaks** — Split comma-separated attribute values in approval work item display into separate lines
 2. **Hide Columns** — Hide specified columns (application, native identity, operation) from approval item grids
-3. **Display Name Mapping** — Replace technical attribute names with friendly display names
-4. **Change Highlighting** — Color-code approval item rows by operation type (Create/Modify/Delete)
-5. **Inline Form Details** — Display form details inline instead of requiring a click on the "View Form" button
+3. **Change Highlighting** — Color-code approval item rows by operation type (Create/Modify/Delete)
 
 ### Non-Functional Requirements
 
@@ -41,31 +39,26 @@ Each UI manipulation is a self-contained module (JS + CSS pair). A core loader r
 
 ```
 IIQ-UI-Toolkit/
-├── manifest.xml                         # Plugin definition, settings, snippets, SPRights
+├── manifest.xml                         # Plugin definition, settings, snippets
 ├── build.xml                            # Ant build
 ├── build.properties                     # Build tokens
 ├── ui/
 │   ├── js/
 │   │   ├── ui-toolkit-core.js           # Core loader: fetches settings, activates modules
+│   │   ├── ui-toolkit-core.js           # Core loader: fetches settings, activates modules
 │   │   ├── module-approval-linebreaks.js
 │   │   ├── module-hide-columns.js
-│   │   ├── module-display-names.js
-│   │   ├── module-change-highlight.js
-│   │   └── module-inline-form-details.js
+│   │   └── module-change-highlight.js
 │   └── css/
 │       ├── ui-toolkit-core.css
 │       ├── module-approval-linebreaks.css
 │       ├── module-hide-columns.css
-│       ├── module-display-names.css
-│       ├── module-change-highlight.css
-│       └── module-inline-form-details.css
+│       └── module-change-highlight.css
 ├── src/
-│   └── com/str/iiq/ui/toolkit/
+│   └── com/iiq/ui/toolkit/
 │       └── UIToolkitRestResource.java    # REST endpoint: returns settings as JSON
 ├── lib/                                  # Compiled JARs
-├── import/
-│   └── install/
-│       └── SPRights.xml                  # Plugin right definition
+├── import/                               # Install-time objects (future use)
 ├── db/                                   # Empty (no DB needed for v1)
 └── messages/                             # i18n (future)
 ```
@@ -74,7 +67,7 @@ IIQ-UI-Toolkit/
 
 | Component | Responsibility |
 |---|---|
-| `manifest.xml` | Plugin metadata, PluginSetting definitions, snippet registration, SPRight |
+| `manifest.xml` | Plugin metadata, PluginSetting definitions, snippet registration |
 | `UIToolkitRestResource.java` | Serves plugin settings as JSON to snippet JS |
 | `ui-toolkit-core.js` | Fetches settings, determines active modules, loads module JS/CSS dynamically, starts MutationObserver |
 | `module-*.js` | Each implements `init(settings)` and `onMutation(mutations)`, registers via `UIToolkit.registerModule()` |
@@ -83,17 +76,16 @@ IIQ-UI-Toolkit/
 
 ## Plugin Settings
 
-All settings are defined as `PluginSetting` entries in `manifest.xml`. IIQ automatically renders them on the plugin's Configure page. No custom settings UI needed.
+Settings are defined both as `PluginSetting` entries (for the settings API) and as a `settingsForm` entry (for UI layout with section grouping). IIQ renders the form on the plugin's Configure page with settings organized under the **Approval Item Settings** section heading.
 
 | Setting Key | Label | Type | Default | Description |
 |---|---|---|---|---|
 | `approvalItems.lineBreak` | Display approvalItem attributes with line breaks | boolean | false | Split comma-separated values into separate lines |
-| `approvalItems.hideApplication` | Hide application column | boolean | false | Hide the application column in approval grids |
+| `approvalItems.hideApplication` | Hide application rows for IdentityIQ | boolean | false | Hide approval items where the application is IdentityIQ; items for other applications are unaffected |
 | `approvalItems.hideNativeIdentity` | Hide native identity column | boolean | false | Hide the native identity column |
 | `approvalItems.hideOperation` | Hide operation column | boolean | false | Hide the operation column |
 | `approvalItems.changeHighlight` | Highlight changes by operation type | boolean | false | Color-code rows by operation type |
-| `approvalItems.inlineFormDetails` | Display form details inline | boolean | false | Show form details inline instead of View Form button |
-| `displayNames.map` | Display name mappings | string | (empty) | Comma-separated `technicalName=displayName` pairs |
+
 
 ## REST Endpoint
 
@@ -103,7 +95,7 @@ Returns all plugin settings as a JSON object. The snippet JS calls this on page 
 
 ```java
 @Path("IIQUIToolkit")
-@RequiredRight("IIQUIToolkitAccess")
+@AllowAll
 public class UIToolkitRestResource extends BasePluginResource {
 
     public String getPluginName() { return "IIQ-UI-Toolkit"; }
@@ -118,8 +110,7 @@ public class UIToolkitRestResource extends BasePluginResource {
         settings.put("approvalItems.hideNativeIdentity", getSettingBool("approvalItems.hideNativeIdentity"));
         settings.put("approvalItems.hideOperation", getSettingBool("approvalItems.hideOperation"));
         settings.put("approvalItems.changeHighlight", getSettingBool("approvalItems.changeHighlight"));
-        settings.put("approvalItems.inlineFormDetails", getSettingBool("approvalItems.inlineFormDetails"));
-        settings.put("displayNames.map", getSettingString("displayNames.map"));
+
         return Response.ok(settings).build();
     }
 }
@@ -132,7 +123,7 @@ One snippet targets approval/work item pages:
 ```xml
 <Snippet name="uiToolkitApproval" 
          regexPattern=".*/identityiq/.*[Ww]ork[Ii]tem.*"
-         rightRequired="IIQUIToolkitAccess">
+         rightRequired="">
   <scripts>
     <List>
       <String>js/ui-toolkit-core.js</String>
@@ -198,9 +189,7 @@ var UIToolkit = {
     if (settings['approvalItems.hideApplication'] || 
         settings['approvalItems.hideNativeIdentity'] || 
         settings['approvalItems.hideOperation']) modules.push('hide-columns');
-    if (settings['displayNames.map'] && settings['displayNames.map'].trim() !== '') modules.push('display-names');
     if (settings['approvalItems.changeHighlight']) modules.push('change-highlight');
-    if (settings['approvalItems.inlineFormDetails']) modules.push('inline-form-details');
     return modules;
   },
 
@@ -292,17 +281,7 @@ UIToolkit.registerModule('module-name', {
 3. Hides `<th>` and all `<td>` at that column index
 4. MutationObserver re-applies when new rows appear dynamically
 
-### Module 3: Display Names (`module-display-names`)
-
-**Config key:** `displayNames.map` (string, comma-separated `technicalName=displayName` pairs)
-
-**Behavior:**
-1. Parses the config string into a lookup map: `{ "firstName": "First Name", "lastName": "Last Name", ... }`
-2. Scans approval item cells for patterns like `technicalName = 'value'`
-3. Replaces the technical name portion with the friendly name from the map
-4. Runs before line breaks module (execution order matters)
-
-### Module 4: Change Highlighting (`module-change-highlight`)
+### Module 3: Change Highlighting (`module-change-highlight`)
 
 **Config key:** `approvalItems.changeHighlight` (boolean)
 
@@ -311,28 +290,13 @@ UIToolkit.registerModule('module-name', {
 2. Adds CSS class to the row: `iuitk-op-create`, `iuitk-op-modify`, `iuitk-op-delete`, etc.
 3. CSS applies background colors: green for Create, blue for Modify, red for Delete
 
-### Module 5: Inline Form Details (`module-inline-form-details`)
-
-**Config key:** `approvalItems.inlineFormDetails` (boolean)
-
-**Behavior:**
-1. Finds "View Form" links/buttons in the approval item area
-2. Fetches the form content via the link's URL using AJAX
-3. Injects the form content inline, hidden by default with an expand/collapse toggle
-4. Hides or removes the original "View Form" button
-5. MutationObserver watches for dynamically loaded form content
-
-**Note:** This is the most complex module. IIQ loads form content via AJAX, so the module must handle async responses and render within the approval item context. The specific IIQ JavaScript patterns for modal/popup loading need to be observed in the DOM during implementation.
-
 ## Module Execution Order
 
 Modules run in a defined order to avoid conflicts:
 
-1. **Display Names** — transforms text before line breaks split it
-2. **Change Highlighting** — adds CSS classes to rows (independent of content)
-3. **Approval Line Breaks** — splits comma values after names are replaced
-4. **Hide Columns** — removes columns after other modules have processed content
-5. **Inline Form Details** — operates on the "View Form" element (independent)
+1. **Change Highlighting** — adds CSS classes to rows (independent of content)
+2. **Approval Line Breaks** — splits comma separated values
+3. **Hide Columns** — removes columns after other modules have processed content
 
 ## Extensibility
 
@@ -348,20 +312,8 @@ Modules run in a defined order to avoid conflicts:
 ### Adding a New Feature (Administrator)
 
 1. Navigate to gear menu → Plugins → IIQ-UI-Toolkit → Configure
-2. Toggle the desired checkboxes or update the display name map
+2. Toggle the desired checkboxes
 3. Save — changes take effect on next page load
-
-## SPRight
-
-A single SPRight `IIQUIToolkitAccess` controls access to both the snippet (who sees the UI enhancements) and the REST endpoint (who can read settings).
-
-```xml
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE SPRight PUBLIC "sailpoint.dtd" "sailpoint.dtd">
-<SPRight name="IIQUIToolkitAccess" displayName="IIQ UI Toolkit Access">
-  <Description>Access to the IIQ UI Toolkit plugin features and settings</Description>
-</SPRight>
-```
 
 ## Build & Deployment
 
@@ -383,7 +335,6 @@ iiq console plugin install file=/path/to/IIQ-UI-Toolkit-1.0.0.zip
 
 ### Post-Install
 
-1. Assign `IIQUIToolkitAccess` SPRight to appropriate identities/roles
-2. Navigate to Plugins → IIQ-UI-Toolkit → Configure
-3. Toggle desired features
-4. Navigate to an approval work item to verify
+1. Navigate to Plugins → IIQ-UI-Toolkit → Configure
+2. Toggle desired features
+3. Navigate to an approval work item to verify

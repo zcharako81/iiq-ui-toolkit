@@ -1,0 +1,30 @@
+/**
+ * IIQ-UI-Toolkit Core Styles
+ * 
+ * Always loaded on targeted pages. Provides base styles
+ * and utility classes used by multiple modules.
+ */
+
+/* Ensure the plugin doesn't interfere with IIQ's own styles */
+.iuitk-attr-line {
+  /* Base definition — overridden by module CSS if needed */
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Utility: subtle transitions for module animations */
+.iuitk-fade-in {
+  animation: iuitkFadeIn 0.3s ease-in;
+}
+
+@keyframes iuitkFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Place operation label (Create:, Modify:, etc.) on its own line above values */
+span.description > strong {
+  display: block !important;
+  margin-bottom: 4px;
+  font-size: 1.05em;
+}

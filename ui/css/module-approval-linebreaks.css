@@ -1,0 +1,28 @@
+/**
+ * Module: Approval Line Breaks
+ * 
+ * Each attribute value item displays on its own line.
+ */
+.iuitk-attr-line {
+  display: block;
+  padding: 1px 0;
+  line-height: 1.5;
+}
+
+.iuitk-attr-line:not(:last-child) {
+  border-bottom: none;
+}
+
+/* Add a bullet or visual separator to each line */
+.iuitk-attr-line::before {
+  content: "\2022";
+  margin-right: 6px;
+  color: #666;
+}
+
+/* Place operation label (Create:, Modify:, etc.) above attribute values */
+span.description > strong {
+  display: block !important;
+  margin-bottom: 4px;
+  font-size: 1.05em;
+}

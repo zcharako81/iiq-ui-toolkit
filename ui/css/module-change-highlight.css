@@ -1,0 +1,31 @@
+/**
+ * Module: Change Highlighting
+ * 
+ * Color-codes approval item panels by operation type using
+ * a colored left border only (no background tinting).
+ */
+
+/* Create / Add — green border */
+.iuitk-op-create {
+  border-left: 4px solid #4caf50 !important;
+}
+
+/* Modify / Update / Change — blue border */
+.iuitk-op-modify {
+  border-left: 4px solid #2196f3 !important;
+}
+
+/* Delete / Remove — red border */
+.iuitk-op-delete {
+  border-left: 4px solid #f44336 !important;
+}
+
+/* Enable / Unlock — green border (lighter) */
+.iuitk-op-enable {
+  border-left: 4px solid #8bc34a !important;
+}
+
+/* Disable / Lock — orange border */
+.iuitk-op-disable {
+  border-left: 4px solid #ff9800 !important;
+}

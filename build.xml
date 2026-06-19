@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="IIQ_UI_Toolkit" default="build" basedir=".">
+
+  <property file="build.properties"/>
+  <property name="pluginClasses" value="${plugin.build}/classes"/>
+
+  <path id="classpath">
+    <fileset dir="${iiq.lib}" includes="**/*.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="${plugin.build}"/>
+    <delete dir="${plugin.lib}"/>
+  </target>
+
+  <target name="compile" depends="clean">
+    <mkdir dir="${pluginClasses}"/>
+    <mkdir dir="${plugin.lib}"/>
+    <javac srcdir="${plugin.src}" destdir="${pluginClasses}"
+           classpathref="classpath" includeantruntime="false"
+           source="1.8" target="1.8"/>
+    <jar destfile="${plugin.lib}/${plugin.name}-${plugin.version}.jar"
+         basedir="${pluginClasses}"/>
+  </target>
+
+  <target name="build" depends="compile">
+    <mkdir dir="${plugin.dist}"/>
+    <zip destfile="${plugin.dist}/${plugin.name}-${plugin.version}.zip">
+      <zipfileset dir="." includes="manifest.xml"/>
+      <zipfileset dir="${plugin.ui}" prefix="ui"/>
+      <zipfileset dir="${plugin.lib}" prefix="jars"/>
+      <zipfileset dir="${plugin.import}" prefix="import"/>
+      <zipfileset dir="${plugin.db}" prefix="db"/>
+      <zipfileset dir="${plugin.messages}" prefix="messages"/>
+    </zip>
+    <echo>Plugin built: ${plugin.dist}/${plugin.name}-${plugin.version}.zip</echo>
+  </target>
+
+</project>

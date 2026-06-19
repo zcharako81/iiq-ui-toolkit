@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Plugin certificationLevel="None" name="IIQ_UI_Toolkit" displayName="IIQ UI Toolkit" disabled="false" version="1.0.0" minSystemVersion="7.3" rightRequired="">
+  <Attributes>
+    <Map>
+
+      <!-- REST Resources -->
+      <entry key="restResources">
+        <value>
+          <List>
+            <String>com.iiq.ui.toolkit.UIToolkitRestResource</String>
+          </List>
+        </value>
+      </entry>
+
+      <!-- Plugin Settings -->
+      <entry key="settings">
+        <value>
+          <List>
+            <Setting name="approvalItems.lineBreak"
+              label="Display approvalItem attributes with line breaks"
+              helpText="Split comma-separated attribute values into separate lines in approval work items"
+              dataType="boolean" defaultValue="false"/>
+
+            <Setting name="approvalItems.hideApplication"
+              label="Hide application column"
+              helpText="Hide the application column in approval item grids"
+              dataType="boolean" defaultValue="false"/>
+
+            <Setting name="approvalItems.hideNativeIdentity"
+              label="Hide native identity column"
+              helpText="Hide the native identity column in approval item grids"
+              dataType="boolean" defaultValue="false"/>
+
+            <Setting name="approvalItems.changeHighlight"
+              label="Highlight changes by operation type"
+              helpText="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
+              dataType="boolean" defaultValue="false"/>
+          </List>
+        </value>
+      </entry>
+
+      <!-- Snippets -->
+      <entry key="snippets">
+        <value>
+          <List>
+            <Snippet regexPattern=".*/workitem/commonWorkItem\.jsf.*"
+                     rightRequired="">
+              <Scripts>
+                <String>ui/js/ui-toolkit-core.js</String>
+              </Scripts>
+              <StyleSheets>
+                <String>ui/css/ui-toolkit-core.css</String>
+              </StyleSheets>
+            </Snippet>
+          </List>
+        </value>
+      </entry>
+
+    </Map>
+  </Attributes>
+</Plugin>

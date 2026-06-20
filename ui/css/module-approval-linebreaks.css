@@ -1,9 +1,12 @@
 /**
  * Module: Approval Line Breaks
- * 
- * Each attribute value item displays on its own line with a white
- * full-width background, visually separated from the panel heading
- * (badge + action buttons).
+ *
+ * Responsibility: split comma-separated attribute values into
+ * individual lines, and stack them as block elements under the
+ * operation label. This module owns LAYOUT ONLY — no background,
+ * border, or other visual treatment. Visual styling of the rows
+ * is owned by the change-highlight module and only applies when
+ * that module is active.
  */
 
 /* Override IIQ's display:inline-block on .more-less-toggle so the
@@ -13,29 +16,16 @@
   width: 100%;
 }
 
+/* Stack each split value on its own line. No background, no border,
+   no padding — change-highlight owns all of that. */
 .iuitk-attr-line {
   display: block;
   width: 100%;
-  background-color: #fff;
-  padding: 6px 10px;
-  margin-bottom: 2px;
-  line-height: 1.5;
-  border-radius: 3px;
-  box-sizing: border-box;
 }
 
-.iuitk-attr-line:not(:last-child) {
-  border-bottom: none;
-}
-
-/* Add a bullet or visual separator to each line */
-.iuitk-attr-line::before {
-  content: "\2022";
-  margin-right: 6px;
-  color: #666;
-}
-
-/* Place operation label (Create:, Modify:, etc.) above attribute values */
+/* Place operation label (Create:, Modify:, etc.) above attribute
+   values. This is layout (block-level under the description), not
+   visual treatment, so it stays here. */
 span.description > strong {
   display: block !important;
   margin-bottom: 4px;

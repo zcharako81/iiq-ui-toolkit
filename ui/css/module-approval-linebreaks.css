@@ -21,6 +21,8 @@
 .iuitk-attr-line {
   display: block;
   width: 100%;
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* Place operation label (Create:, Modify:, etc.) above attribute

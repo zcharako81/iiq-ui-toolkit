@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
-<Plugin certificationLevel="None" name="IIQ_UI_Toolkit" displayName="IIQ UI Toolkit" disabled="false" version="1.0.0" minSystemVersion="7.3" rightRequired="">
+<Plugin certificationLevel="None" name="IIQ_UI_Toolkit" displayName="IIQ UI Toolkit" disabled="false" version="1.0.5" minSystemVersion="7.3" rightRequired="">
   <Attributes>
     <Map>
 
@@ -36,6 +36,16 @@
               label="Highlight changes by operation type"
               helpText="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
               dataType="boolean" defaultValue="false"/>
+
+            <Setting name="approvalItems.showFormValues"
+              label="Replace attribute display with form values"
+              helpText="Comma-separated list of request form name prefixes. When an approval item description starts with one of these values, attribute columns are replaced with form field values from the work item form. Example: 'Identity Approval - Account Changes'"
+              dataType="string" defaultValue=""/>
+
+            <Setting name="approvalItems.itemAging"
+              label="Show item age and expiration badges"
+              helpText="Color-coded badges in section header showing days since created (blue ≤7d, orange 8-13d, red ≥14d) and days until expiration (green, orange, red) when expiration date is set."
+              dataType="boolean" defaultValue="false"/>
           </List>
         </value>
       </entry>
@@ -67,6 +77,14 @@
               <Field name="approvalItems.changeHighlight"
                      displayName="Highlight changes by operation type"
                      helpKey="Color-code approval item rows based on operation (Create=green, Modify=blue, Delete=red)"
+                     type="boolean"/>
+              <Field name="approvalItems.showFormValues"
+                     displayName="Replace attribute display with form values"
+                     helpKey="Comma-separated list of request form name prefixes. When an approval item matches, attribute columns are replaced with form field values. Example: 'Identity Approval - Account Changes'"
+                     type="text"/>
+              <Field name="approvalItems.itemAging"
+                     displayName="Show item age and expiration badges"
+                     helpKey="Color-coded badges in section header showing days since created and days until expiration."
                      type="boolean"/>
             </Section>
           </Form>

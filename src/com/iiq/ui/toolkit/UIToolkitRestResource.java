@@ -34,6 +34,8 @@ public class UIToolkitRestResource extends BasePluginResource {
         settings.put("approvalItems.hideApplication", getSettingBool("approvalItems.hideApplication"));
         settings.put("approvalItems.hideNativeIdentity", getSettingBool("approvalItems.hideNativeIdentity"));
         settings.put("approvalItems.changeHighlight", getSettingBool("approvalItems.changeHighlight"));
+        settings.put("approvalItems.showFormValues", getSettingString("approvalItems.showFormValues"));
+        settings.put("approvalItems.itemAging", getSettingBool("approvalItems.itemAging"));
         return Response.ok(settings).build();
     }
 }

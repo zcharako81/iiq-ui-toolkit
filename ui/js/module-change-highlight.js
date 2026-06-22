@@ -92,8 +92,8 @@
         // Find the sibling .pull-right (action buttons) and wrap it
         // together with the badge in a single header row element.
         // The col-xs-12 is the parent of both desc and pull-right.
-        var col = desc.parentNode;
-        var pullRight = col ? col.querySelector(':scope > .pull-right') : null;
+      var col = desc.parentNode;
+      var pullRight = col.querySelector('.pull-right');
 
         if (pullRight) {
           // Insert the badge just before the pull-right inside col

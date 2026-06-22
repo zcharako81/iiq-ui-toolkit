@@ -81,23 +81,16 @@ span.description[data-iuitk-op] {
 
 /* ========== Attribute row visual treatment ========== */
 
-/* When the change-highlight module is active, each panel carries an
-   .iuitk-op-* class. We use that as the gate to apply the card-style
-   treatment to the attribute rows inside it — background, border,
-   padding, separator between rows. Without the operation class
-   (e.g. line-breaks-only mode) the rows render as plain stacked text. */
+/* Lightweight: each attribute row gets only a bottom dotted separator
+   line. No background, no border box — keeps the UI clean and minimal.
+   The dotted line visually separates rows without adding visual weight.
+   Last child has no bottom border. */
 .iuitk-op-create .iuitk-attr-line,
 .iuitk-op-modify .iuitk-attr-line,
 .iuitk-op-delete .iuitk-attr-line,
 .iuitk-op-enable .iuitk-attr-line,
 .iuitk-op-disable .iuitk-attr-line {
-  background-color: #f8f9fa;
-  border: 1px solid #e8eaed;
-  padding: 8px 12px;
-  margin-bottom: 6px;
-  line-height: 1.45;
-  border-radius: 4px;
-  box-sizing: border-box;
+  padding: 3px 0;
 }
 
 .iuitk-op-create .iuitk-attr-line:not(:last-child),
@@ -105,7 +98,7 @@ span.description[data-iuitk-op] {
 .iuitk-op-delete .iuitk-attr-line:not(:last-child),
 .iuitk-op-enable .iuitk-attr-line:not(:last-child),
 .iuitk-op-disable .iuitk-attr-line:not(:last-child) {
-  border-bottom: 1px solid #e8eaed;
+  border-bottom: 1px dotted #d0d0d0;
 }
 
 /* No leading bullet on the styled rows — the card itself communicates

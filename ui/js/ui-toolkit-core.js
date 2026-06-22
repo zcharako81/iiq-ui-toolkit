@@ -1,8 +1,6 @@
 /**
  * IIQ-UI-Toolkit Core Loader
  */
-!function(){console.log('[IIQ_UI_Toolkit] snippet file loaded at '+new Date().toISOString())}();
-
 var UIToolkit = (function() {
 
   'use strict';
@@ -13,9 +11,13 @@ var UIToolkit = (function() {
   var debounceTimer = null;
   var activeModuleNames = []; // URL-filtered list, cached after activation
 
-  var CTX = (typeof SailPoint !== 'undefined' && SailPoint.CONTEXT_PATH) ? SailPoint.CONTEXT_PATH : '/identityiq';
+  var CTX = '/identityiq';
+  if (typeof SailPoint !== 'undefined' && SailPoint.CONTEXT_PATH != null) {
+    CTX = SailPoint.CONTEXT_PATH;
+  }
+  CTX = CTX.replace(/\/+$/, '') || ''; // strip trailing slash, handle root context
   var XSRF = (typeof SailPoint !== 'undefined' && SailPoint.XSRF_TOKEN) ? SailPoint.XSRF_TOKEN : '';
-  var VERSION = '1.0.0';
+  var VERSION = '1.0.5';
   var PLUGIN_BASE = CTX + '/plugin/IIQ_UI_Toolkit';
   var SETTINGS_URL = CTX + '/plugin/rest/IIQUIToolkit/settings';
 
@@ -42,6 +44,8 @@ var UIToolkit = (function() {
     var hideNI  = settings['approvalItems.hideNativeIdentity'];
     if (hideApp || hideNI) active.push('hide-columns');
     if (settings['approvalItems.changeHighlight']) active.push('change-highlight');
+    if (settings['approvalItems.showFormValues']) active.push('form-values');
+    if (settings['approvalItems.itemAging']) active.push('item-aging');
     return active;
   }
 
@@ -124,7 +128,7 @@ var UIToolkit = (function() {
               return;
             }
 
-            // Load CSS
+            // Load CSS (cache-busted)
             for (var i = 0; i < active.length; i++) {
               loadCSS('css/module-' + active[i] + '.css');
             }
@@ -134,7 +138,7 @@ var UIToolkit = (function() {
             for (var j = 0; j < active.length; j++) {
               (function(moduleName) {
                 var s = document.createElement('script');
-                s.src = PLUGIN_BASE + '/ui/js/module-' + moduleName + '.js';
+                s.src = PLUGIN_BASE + '/ui/js/module-' + moduleName + '.js?v=' + VERSION;
                 s.onload = function() {
                   loaded++;
                   log('loaded module JS: ' + moduleName + ' (' + loaded + '/' + active.length + ')');

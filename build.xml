@@ -29,9 +29,6 @@
       <zipfileset dir="." includes="manifest.xml"/>
       <zipfileset dir="${plugin.ui}" prefix="ui"/>
       <zipfileset dir="${plugin.lib}" prefix="jars"/>
-      <zipfileset dir="${plugin.import}" prefix="import"/>
-      <zipfileset dir="${plugin.db}" prefix="db"/>
-      <zipfileset dir="${plugin.messages}" prefix="messages"/>
     </zip>
     <echo>Plugin built: ${plugin.dist}/${plugin.name}-${plugin.version}.zip</echo>
   </target>

@@ -16,21 +16,6 @@ All features are individually toggleable in the plugin settings. Default state: 
 | **Item Aging** | `approvalItems.itemAging` | Color-coded expiration badge on the work item section header: green (>3 days), orange (1–3 days), red (expired). |
 | **European Date Format** | `approvalItems.europeanDateFormat` | Converts `mm/dd/yyyy` date format to `dd.mm.yyyy` in approval work item attribute displays. |
 
-## Locale Support
-
-The plugin detects browser language via `navigator.language` and supports:
-
-- **English** (default)
-- **German** — operation names (`Erstellen`, `Ändern`, `Löschen`, `Aktivieren`, `Deaktivieren`, etc.) and item-aging labels (`Abgelaufen`, `Läuft in X Tagen ab`) render in German when the browser is set to a German locale.
-
-Tested with IIQ 8.5 against `de`, `de-DE`, `de-AT`, `de-CH`.
-
-## Requirements
-
-- **SailPoint IdentityIQ** 7.3 or later (tested on 8.5)
-- Plugin framework enabled (`plugins.disable=false`)
-- Modern browser on the client side; **IE11 is supported** (modules avoid ES6+ methods like `String.prototype.startsWith` and `padStart`)
-
 ## Installation
 
 ### From prebuilt ZIP (recommended)

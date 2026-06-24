@@ -36,6 +36,7 @@ public class UIToolkitRestResource extends BasePluginResource {
         settings.put("approvalItems.changeHighlight", getSettingBool("approvalItems.changeHighlight"));
         settings.put("approvalItems.showFormValues", getSettingString("approvalItems.showFormValues"));
         settings.put("approvalItems.itemAging", getSettingBool("approvalItems.itemAging"));
+        settings.put("approvalItems.europeanDateFormat", getSettingBool("approvalItems.europeanDateFormat"));
         return Response.ok(settings).build();
     }
 }

@@ -29,6 +29,19 @@
     if (typeof v === 'object') {
       return v.displayName || v.displayableName || v.name || '';
     }
+    // Format date timestamps as dd.mm.year
+    if (item.type === 'date') {
+      var ts = Number(v);
+      if (!isNaN(ts) && ts > 0) {
+        var d = new Date(ts);
+        if (!isNaN(d.getTime())) {
+          var dd = String(d.getDate()).padStart(2, '0');
+          var mm = String(d.getMonth() + 1).padStart(2, '0');
+          var yyyy = d.getFullYear();
+          return dd + '.' + mm + '.' + yyyy;
+        }
+      }
+    }
     return String(v);
   }
 

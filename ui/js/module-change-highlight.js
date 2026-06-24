@@ -17,6 +17,7 @@
   'use strict';
 
   var OPERATION_CLASSES = {
+    // English
     'Create':  'iuitk-op-create',
     'Add':     'iuitk-op-create',
     'Modify':  'iuitk-op-modify',
@@ -27,17 +28,25 @@
     'Enable':  'iuitk-op-enable',
     'Disable': 'iuitk-op-disable',
     'Unlock':  'iuitk-op-enable',
-    'Lock':    'iuitk-op-disable'
+    'Lock':    'iuitk-op-disable',
+    // German
+    'Erstellen':  'iuitk-op-create',
+    'Hinzufügen': 'iuitk-op-create',
+    'Ändern':     'iuitk-op-modify',
+    'Aktualisieren': 'iuitk-op-modify',
+    'Löschen':    'iuitk-op-delete',
+    'Entfernen':  'iuitk-op-delete',
+    'Aktivieren': 'iuitk-op-enable',
+    'Deaktivieren': 'iuitk-op-disable',
+    'Entsperren': 'iuitk-op-enable',
+    'Sperren':    'iuitk-op-disable'
   };
 
   function getOperationClass(text) {
     if (!text) return null;
     var trimmed = text.replace(/:$/, '').trim();
-    for (var op in OPERATION_CLASSES) {
-      if (OPERATION_CLASSES.hasOwnProperty(op) &&
-          trimmed.indexOf(op) !== -1) {
-        return { opClass: OPERATION_CLASSES[op], opName: op };
-      }
+    if (OPERATION_CLASSES.hasOwnProperty(trimmed)) {
+      return { opClass: OPERATION_CLASSES[trimmed], opName: trimmed };
     }
     return null;
   }

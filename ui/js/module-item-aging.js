@@ -28,9 +28,10 @@
    * Get expiration CSS class and label.
    */
   function expiryInfo(daysLeft, isExpired) {
-    if (isExpired || daysLeft <= 0) return { cls: 'iuitk-exp-red', label: 'Expired' };
-    if (daysLeft < 3)  return { cls: 'iuitk-exp-orange', label: 'Expiration in ' + daysLeft + ' days' };
-    return { cls: 'iuitk-exp-green', label: 'Expiration in ' + daysLeft + ' days' };
+    var de = (navigator.language||'').toLowerCase().indexOf('de') === 0;
+    if (isExpired || daysLeft <= 0) return { cls: 'iuitk-exp-red', label: de ? 'Abgelaufen' : 'Expired' };
+    if (daysLeft <= 3)  return { cls: 'iuitk-exp-orange', label: de ? ('Läuft in ' + daysLeft + (daysLeft === 1 ? ' Tag ab' : ' Tagen ab')) : 'Expiration in ' + daysLeft + (daysLeft === 1 ? ' day' : ' days') };
+    return { cls: 'iuitk-exp-green', label: de ? 'Läuft in ' + daysLeft + ' Tagen ab' : 'Expiration in ' + daysLeft + ' days' };
   }
 
   /**
@@ -61,17 +62,15 @@
 
         var exp = expiryInfo(daysLeft, isExpired);
 
-        // Find the right column (col-xs-2) to inject badge
-        var rightCol = container.querySelector('sp-work-item-header [class*=col-xs-2], .approval.panel [class*=col-xs-2]');
-        // Fallback: if right column not found, use the header itself
-        var target = rightCol || container.querySelector('.panel-heading');
-        if (!target) continue;
+        // Append badge to the section header itself, positioned to the right
+        var headerEl = container.querySelector('.panel-heading');
+        if (!headerEl) continue;
 
         var badge = document.createElement('span');
         badge.className = 'iuitk-exp-badge ' + exp.cls;
         badge.textContent = exp.label;
 
-        target.appendChild(badge);
+        headerEl.appendChild(badge);
         container.setAttribute('data-iuitk-aging', 'done');
       } catch (e) {}
     }

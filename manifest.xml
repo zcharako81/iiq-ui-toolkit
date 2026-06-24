@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
-<Plugin certificationLevel="None" name="IIQ_UI_Toolkit" displayName="IIQ UI Toolkit" disabled="false" version="1.0.5" minSystemVersion="7.3" rightRequired="">
+<Plugin certificationLevel="None" name="IIQ_UI_Toolkit" displayName="IIQ UI Toolkit" disabled="false" version="1.1.0" minSystemVersion="7.3" rightRequired="">
   <Attributes>
     <Map>
 
@@ -46,6 +46,11 @@
               label="Show item age and expiration badges"
               helpText="Color-coded badges in section header showing days since created (blue ≤7d, orange 8-13d, red ≥14d) and days until expiration (green, orange, red) when expiration date is set."
               dataType="boolean" defaultValue="false"/>
+
+            <Setting name="approvalItems.europeanDateFormat"
+              label="Use European date format"
+              helpText="Convert US date format (mm/dd/yyyy) to European format (dd.mm.yyyy) in approval work item attribute displays."
+              dataType="boolean" defaultValue="false"/>
           </List>
         </value>
       </entry>
@@ -85,6 +90,10 @@
               <Field name="approvalItems.itemAging"
                      displayName="Show item age and expiration badges"
                      helpKey="Color-coded badges in section header showing days since created and days until expiration."
+                     type="boolean"/>
+              <Field name="approvalItems.europeanDateFormat"
+                     displayName="Use European date format"
+                     helpKey="Convert US date format (mm/dd/yyyy) to European format (dd.mm.yyyy) in approval work item attribute displays."
                      type="boolean"/>
             </Section>
           </Form>

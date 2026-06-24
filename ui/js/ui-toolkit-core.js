@@ -17,7 +17,7 @@ var UIToolkit = (function() {
   }
   CTX = CTX.replace(/\/+$/, '') || ''; // strip trailing slash, handle root context
   var XSRF = (typeof SailPoint !== 'undefined' && SailPoint.XSRF_TOKEN) ? SailPoint.XSRF_TOKEN : '';
-  var VERSION = '1.0.5';
+  var VERSION = '1.1.0';
   var PLUGIN_BASE = CTX + '/plugin/IIQ_UI_Toolkit';
   var SETTINGS_URL = CTX + '/plugin/rest/IIQUIToolkit/settings';
 
@@ -46,6 +46,7 @@ var UIToolkit = (function() {
     if (settings['approvalItems.changeHighlight']) active.push('change-highlight');
     if (settings['approvalItems.showFormValues']) active.push('form-values');
     if (settings['approvalItems.itemAging']) active.push('item-aging');
+    if (settings['approvalItems.europeanDateFormat']) active.push('european-date-format');
     return active;
   }
 
